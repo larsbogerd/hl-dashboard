@@ -1,9 +1,8 @@
-# arr-dashboard
+# hl-dashboard
 
-A single-pane dashboard for a self-hosted \*arr stack (Sonarr / Radarr / Prowlarr),
-intended to run locally on my NAS.
+A single-pane dashboard for a self-hosted homelab — Sonarr, Radarr, Prowlarr, Bazarr, qBittorrent, Plex — so you can see everything at a glance instead of opening six tabs.
 
-Personal project - mostly React + TypeScript practice.
+Runs locally on a NAS. Personal project, mostly React + TypeScript practice.
 
 ## Development
 
