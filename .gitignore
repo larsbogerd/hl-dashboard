@@ -29,7 +29,8 @@ coverage
 .eslintcache
 *.tsbuildinfo
 
-# --- Editors ---
+# --- Editors / local tooling ---
+.claude/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
