@@ -43,6 +43,14 @@ export default defineConfig(({mode}) => {
                     rewrite: (path) => path.replace(/^\/api\/bazarr/, ''),
                     headers: {'X-API-KEY': env.BAZARR_API_KEY},
                 },
+                // No key: Plex allows unauthenticated LAN access.
+                // Accept header or it answers in XML.
+                '/api/plex': {
+                    target: env.VITE_PLEX_URL,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/plex/, ''),
+                    headers: {Accept: 'application/json'},
+                },
                 // No key: qBittorrent bypasses auth for the LAN subnet.
                 // Origin/Referer must match, or its CSRF check 401s.
                 '/api/qbittorrent': {
