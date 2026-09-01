@@ -1,6 +1,6 @@
-import {formatBytes} from '../format'
-import type {Service} from '../types'
-import {get, getText} from './client'
+import { formatBytes } from '../format'
+import type { Service } from '../types'
+import { get, getText } from './client'
 
 /** Proxied in vite.config.ts; the prefix is stripped before forwarding. */
 const BASE = '/api/qbittorrent/api/v2'
@@ -39,15 +39,19 @@ export async function fetchQbittorrent(): Promise<Service> {
         version: version.replace(/^v/, ''),
         url: import.meta.env.VITE_QBITTORRENT_URL,
         stats: [
-            {label: 'Active torrents', value: String(torrents.length)},
-            {label: 'Size on disk', value: formatBytes(onDisk)},
+            { label: 'Active torrents', value: String(torrents.length) },
+            { label: 'Size on disk', value: formatBytes(onDisk) },
             {
                 label: 'Leeching',
-                value: String(torrents.filter((t) => isDownloading(t.state)).length),
+                value: String(
+                    torrents.filter((t) => isDownloading(t.state)).length,
+                ),
             },
             {
                 label: 'Seeding',
-                value: String(torrents.filter((t) => isSeeding(t.state)).length),
+                value: String(
+                    torrents.filter((t) => isSeeding(t.state)).length,
+                ),
             },
             {
                 label: 'Down',

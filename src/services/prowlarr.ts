@@ -1,13 +1,13 @@
-import type {Service} from '../types'
-import {get} from './client'
+import type { Service } from '../types'
+import { get } from './client'
 
 /** Proxied in vite.config.ts; the prefix is stripped before forwarding. */
 const BASE = '/api/prowlarr/api/v1'
 
-type Indexer = {enable: boolean}
+type Indexer = { enable: boolean }
 
 /** One entry per currently-failing indexer. */
-type IndexerStatus = {indexerId: number; disabledTill: string | null}
+type IndexerStatus = { indexerId: number; disabledTill: string | null }
 
 type IndexerStats = {
     indexers: {
@@ -20,7 +20,10 @@ type IndexerStats = {
     }[]
 }
 
-function sum(stats: IndexerStats, pick: (i: IndexerStats['indexers'][0]) => number) {
+function sum(
+    stats: IndexerStats,
+    pick: (i: IndexerStats['indexers'][0]) => number,
+) {
     return stats.indexers.reduce((total, i) => total + pick(i), 0)
 }
 
@@ -31,11 +34,11 @@ export async function fetchProwlarr(): Promise<Service> {
     const window = `startDate=${start.toISOString()}&endDate=${end.toISOString()}`
 
     const [status, indexers, failing, stats, health] = await Promise.all([
-        get<{version: string}>(`${BASE}/system/status`),
+        get<{ version: string }>(`${BASE}/system/status`),
         get<Indexer[]>(`${BASE}/indexer`),
         get<IndexerStatus[]>(`${BASE}/indexerstatus`),
         get<IndexerStats>(`${BASE}/indexerstats?${window}`),
-        get<{message: string}[]>(`${BASE}/health`),
+        get<{ message: string }[]>(`${BASE}/health`),
     ])
 
     const enabled = indexers.filter((i) => i.enable).length
@@ -50,7 +53,7 @@ export async function fetchProwlarr(): Promise<Service> {
         version: status.version,
         url: import.meta.env.VITE_PROWLARR_URL,
         stats: [
-            {label: 'Indexers', value: `${enabled} / ${indexers.length}`},
+            { label: 'Indexers', value: `${enabled} / ${indexers.length}` },
             {
                 label: 'Failing',
                 value: String(failing.length),
@@ -62,7 +65,10 @@ export async function fetchProwlarr(): Promise<Service> {
                     sum(stats, (i) => i.numberOfQueries + i.numberOfRssQueries),
                 ),
             },
-            {label: 'Grabs 24h', value: String(sum(stats, (i) => i.numberOfGrabs))},
+            {
+                label: 'Grabs 24h',
+                value: String(sum(stats, (i) => i.numberOfGrabs)),
+            },
             {
                 label: 'Failed 24h',
                 value: String(failed),

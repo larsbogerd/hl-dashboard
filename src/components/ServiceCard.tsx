@@ -1,4 +1,4 @@
-import type {Service, ServiceStatus} from '../types'
+import type { Service, ServiceStatus } from '../types'
 
 const STATUS_LABEL: Record<ServiceStatus, string> = {
     loading: 'Checking…',
@@ -10,8 +10,8 @@ type Props = {
     service: Service
 }
 
-export function ServiceCard({service}: Props) {
-    const {name, status, version, stats, url} = service
+export function ServiceCard({ service }: Props) {
+    const { name, status, version, stats, url } = service
 
     return (
         <article className={`card card--${status}`}>
@@ -31,9 +31,9 @@ export function ServiceCard({service}: Props) {
                     )}
                 </h2>
                 <span className="card__status">
-          <span className="dot" aria-hidden="true"/>
+                    <span className="dot" aria-hidden="true" />
                     {STATUS_LABEL[status]}
-        </span>
+                </span>
             </header>
 
             <p className="card__version">{version ? `v${version}` : ' '}</p>

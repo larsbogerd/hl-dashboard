@@ -1,4 +1,4 @@
-import {get, post} from './client'
+import { get, post } from './client'
 
 /** Proxied in vite.config.ts; the prefix is stripped before forwarding. */
 const BASE = '/api/truenas/api/v2.0'
@@ -56,7 +56,12 @@ function latest(graphs: Graph[], name: string, column: string): number {
 }
 
 /** Every value for one column, downsampled to `buckets` averaged points. */
-function series(graphs: Graph[], name: string, column: string, buckets = 60): number[] {
+function series(
+    graphs: Graph[],
+    name: string,
+    column: string,
+    buckets = 60,
+): number[] {
     const graph = graphs.find((g) => g.name === name)
     if (!graph) return []
     const index = graph.legend.indexOf(column)
@@ -66,7 +71,9 @@ function series(graphs: Graph[], name: string, column: string, buckets = 60): nu
     const out: number[] = []
     for (let i = 0; i < graph.data.length; i += size) {
         const slice = graph.data.slice(i, i + size)
-        out.push(slice.reduce((sum, r) => sum + (r[index] ?? 0), 0) / slice.length)
+        out.push(
+            slice.reduce((sum, r) => sum + (r[index] ?? 0), 0) / slice.length,
+        )
     }
     return out
 }
@@ -89,13 +96,13 @@ export async function fetchTrueNas(): Promise<SystemInfo> {
         get<Pool[]>(`${BASE}/pool`),
         post<Graph[]>(`${BASE}/reporting/netdata_get_data`, {
             graphs: [
-                {name: 'cpu'},
-                {name: 'cputemp'},
-                {name: 'memory'},
-                {name: 'arcsize'},
-                {name: 'interface', identifier: 'enp4s0'},
+                { name: 'cpu' },
+                { name: 'cputemp' },
+                { name: 'memory' },
+                { name: 'arcsize' },
+                { name: 'interface', identifier: 'enp4s0' },
             ],
-            query: {unit: 'HOUR', page: 1, aggregate: true},
+            query: { unit: 'HOUR', page: 1, aggregate: true },
         }),
     ])
 
