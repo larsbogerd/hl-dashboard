@@ -1,26 +1,15 @@
 import type {Service} from '../types'
+import {fetchRadarr} from './radarr'
+import {fetchSonarr} from './sonarr'
 
-export {fetchSonarr} from './sonarr'
+type Connector = {
+    name: string
+    url: string
+    fetch: () => Promise<Service>
+}
 
-/** Not wired up yet — links only, stats stubbed. Blank env = no link. */
-const PLACEHOLDERS: {name: string; url: string}[] = [
-    {name: 'Radarr', url: import.meta.env.VITE_RADARR_URL},
-    {name: 'Prowlarr', url: import.meta.env.VITE_PROWLARR_URL},
-    {name: 'Bazarr', url: import.meta.env.VITE_BAZARR_URL},
-    {name: 'qBittorrent', url: import.meta.env.VITE_QBITTORRENT_URL},
-    {name: 'Plex', url: import.meta.env.VITE_PLEX_URL},
+/** Add a connector here and its card appears on the grid. */
+export const CONNECTORS: Connector[] = [
+    {name: 'Sonarr', url: import.meta.env.VITE_SONARR_URL, fetch: fetchSonarr},
+    {name: 'Radarr', url: import.meta.env.VITE_RADARR_URL, fetch: fetchRadarr},
 ]
-
-export const PLACEHOLDER_SERVICES: Service[] = PLACEHOLDERS.map(
-    ({name, url}) => ({
-        name,
-        status: 'offline',
-        url: url || undefined,
-        stats: [
-            {label: 'Items', value: '-'},
-            {label: 'Queue', value: '-'},
-            {label: 'On disk', value: '-'},
-            {label: 'Health', value: '-'},
-        ],
-    }),
-)
