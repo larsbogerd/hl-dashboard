@@ -18,3 +18,13 @@ export function formatUptime(startTime: string): string {
     if (hours > 0) return `${hours}h ${mins}m`
     return `${mins}m`
 }
+/** "36m ago" / "3h ago" / "2d ago" from an ISO timestamp. */
+export function formatAgo(iso: string): string {
+    const ms = Date.now() - new Date(iso).getTime()
+    if (Number.isNaN(ms) || ms < 0) return '—'
+    const mins = Math.floor(ms / 60_000)
+    if (mins < 60) return `${mins}m ago`
+    const hours = Math.floor(mins / 60)
+    if (hours < 24) return `${hours}h ago`
+    return `${Math.floor(hours / 24)}d ago`
+}

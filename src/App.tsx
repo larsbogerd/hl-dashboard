@@ -1,26 +1,53 @@
 import {useEffect, useState} from 'react'
 import {ServiceCard} from './components/ServiceCard'
-import {fetchSonarr, PLACEHOLDER_SERVICES} from './services'
+import {SystemPanel} from './components/SystemPanel'
+import {CONNECTORS} from './services'
+import {fetchTrueNas, type SystemInfo} from './services/truenas'
 import type {Service} from './types'
 
-function App() {
-    const [sonarr, setSonarr] = useState<Service>({
-        name: 'Sonarr',
+function initialServices(): Service[] {
+    return CONNECTORS.map(({name, url}) => ({
+        name,
         status: 'loading',
+        url: url || undefined,
         stats: [],
-    })
+    }))
+}
+
+function App() {
+    const [connected, setConnected] = useState<Service[]>(initialServices)
+    const [system, setSystem] = useState<SystemInfo | null>(null)
 
     useEffect(() => {
-        fetchSonarr()
-            .then(setSonarr)
-            .catch((err: unknown) => {
-                console.error('Sonarr fetch failed:', err)
-                setSonarr({name: 'Sonarr', status: 'offline', stats: [], url: import.meta.env.VITE_SONARR_URL})
-            })
+        fetchTrueNas()
+            .then(setSystem)
+            .catch((err: unknown) => console.error('TrueNAS fetch failed:', err))
     }, [])
 
-    const services = [sonarr, ...PLACEHOLDER_SERVICES]
-    const onlineCount = services.filter((s) => s.status === 'online').length
+    useEffect(() => {
+        CONNECTORS.forEach(({name, url, fetch}, index) => {
+            // Each card updates on its own, so one slow service
+            // doesn't hold up the rest.
+            const replace = (service: Service) =>
+                setConnected((prev) =>
+                    prev.map((old, i) => (i === index ? service : old)),
+                )
+
+            fetch()
+                .then(replace)
+                .catch((err: unknown) => {
+                    console.error(`${name} fetch failed:`, err)
+                    replace({
+                        name,
+                        status: 'offline',
+                        url: url || undefined,
+                        stats: [],
+                    })
+                })
+        })
+    }, [])
+
+    const onlineCount = connected.filter((s) => s.status === 'online').length
 
     return (
         <div className="app">
@@ -28,13 +55,15 @@ function App() {
                 <div>
                     <h1 className="page-title">Homelab dashboard</h1>
                     <p className="page-sub">
-                        {onlineCount} of {services.length} services online
+                        {onlineCount} of {connected.length} services online
                     </p>
                 </div>
             </header>
 
+            {system && <SystemPanel info={system}/>}
+
             <section className="grid">
-                {services.map((service) => (
+                {connected.map((service) => (
                     <ServiceCard key={service.name} service={service}/>
                 ))}
             </section>

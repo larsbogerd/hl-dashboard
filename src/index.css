@@ -14,6 +14,7 @@
     --offline: #ef4444;
     --idle: #9ca3af;
     --loading: #f59e0b;
+  --accent: #38bdf8;
 
     color-scheme: light dark;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -183,4 +184,231 @@ body {
   margin-left: 0.3rem;
   font-size: 0.75em;
   opacity: 0.45;
+}
+
+/* --- TrueNAS system panel --- */
+
+.system {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.system__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.system__host {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.system__meta {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.system__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1.4rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.tile--wide {
+  grid-column: span 2;
+}
+
+.tile__label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.tile__value {
+  font-size: 1.35rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.tile__value--sm {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.tile__unit {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.tile__sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.meter {
+  height: 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--muted) 22%, transparent);
+  overflow: hidden;
+}
+
+.meter__fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.meter__fill--warn {
+  background: var(--loading);
+}
+
+.meter__fill--bad {
+  background: var(--offline);
+}
+
+/* stacked memory bar: services + cache, remainder reads as free */
+.meter--split {
+  display: flex;
+}
+
+.seg {
+  height: 100%;
+}
+
+.seg--services {
+  background: var(--accent);
+}
+
+.seg--cache {
+  background: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+.legend {
+  display: flex;
+  gap: 0.25rem 0.7rem;
+  flex-wrap: wrap;
+}
+
+.legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.key {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.key--services {
+  background: var(--accent);
+}
+
+.key--cache {
+  background: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+.key--free {
+  background: color-mix(in srgb, var(--muted) 22%, transparent);
+}
+
+.spark {
+  width: 100%;
+  height: 30px;
+  border-bottom: 1px solid var(--border);
+}
+
+.spark__line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.spark__area {
+  fill: color-mix(in srgb, var(--accent) 16%, transparent);
+  stroke: none;
+}
+
+/* --- pools --- */
+
+.pools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.55rem 1.1rem;
+  margin-top: 0.15rem;
+}
+
+.pool__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.pool__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.pool__pct {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pool__sub {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dot--ok {
+  background: var(--online);
+}
+
+.dot--bad {
+  background: var(--offline);
+}
+
+
+.stat__value--warn {
+  color: var(--loading);
+}
+
+.stat__value--bad {
+  color: var(--offline);
 }
