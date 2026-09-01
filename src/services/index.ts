@@ -1,6 +1,7 @@
 import type {Service} from '../types'
 import {fetchBazarr} from './bazarr'
 import {fetchProwlarr} from './prowlarr'
+import {fetchQbittorrent} from './qbittorrent'
 import {fetchRadarr} from './radarr'
 import {fetchSonarr} from './sonarr'
 
@@ -15,4 +16,5 @@ export const CONNECTORS: Connector[] = [
     {name: 'Radarr', url: import.meta.env.VITE_RADARR_URL, fetch: fetchRadarr},
     {name: 'Prowlarr', url: import.meta.env.VITE_PROWLARR_URL, fetch: fetchProwlarr},
     {name: 'Bazarr', url: import.meta.env.VITE_BAZARR_URL, fetch: fetchBazarr},
+    {name: 'qBittorrent', url: import.meta.env.VITE_QBITTORRENT_URL, fetch: fetchQbittorrent},
 ]

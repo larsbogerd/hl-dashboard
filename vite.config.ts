@@ -35,6 +35,17 @@ export default defineConfig(({mode}) => {
                     rewrite: (path) => path.replace(/^\/api\/bazarr/, ''),
                     headers: {'X-API-KEY': env.BAZARR_API_KEY},
                 },
+                // No key: qBittorrent bypasses auth for the LAN subnet.
+                // Origin/Referer must match, or its CSRF check 401s.
+                '/api/qbittorrent': {
+                    target: env.VITE_QBITTORRENT_URL,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/qbittorrent/, ''),
+                    headers: {
+                        Origin: env.VITE_QBITTORRENT_URL,
+                        Referer: env.VITE_QBITTORRENT_URL,
+                    },
+                },
             },
         },
     }
