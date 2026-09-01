@@ -1,4 +1,5 @@
 import type {Service} from '../types'
+import {fetchProwlarr} from './prowlarr'
 import {fetchRadarr} from './radarr'
 import {fetchSonarr} from './sonarr'
 
@@ -12,4 +13,9 @@ type Connector = {
 export const CONNECTORS: Connector[] = [
     {name: 'Sonarr', url: import.meta.env.VITE_SONARR_URL, fetch: fetchSonarr},
     {name: 'Radarr', url: import.meta.env.VITE_RADARR_URL, fetch: fetchRadarr},
+    {
+        name: 'Prowlarr',
+        url: import.meta.env.VITE_PROWLARR_URL,
+        fetch: fetchProwlarr,
+    },
 ]

@@ -23,6 +23,12 @@ export default defineConfig(({mode}) => {
                     rewrite: (path) => path.replace(/^\/api\/radarr/, ''),
                     headers: {'X-Api-Key': env.RADARR_API_KEY},
                 },
+                '/api/prowlarr': {
+                    target: env.VITE_PROWLARR_URL,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/prowlarr/, ''),
+                    headers: {'X-Api-Key': env.PROWLARR_API_KEY},
+                },
             },
         },
     }
