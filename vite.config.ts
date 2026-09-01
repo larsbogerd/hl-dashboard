@@ -29,6 +29,12 @@ export default defineConfig(({mode}) => {
                     rewrite: (path) => path.replace(/^\/api\/prowlarr/, ''),
                     headers: {'X-Api-Key': env.PROWLARR_API_KEY},
                 },
+                '/api/bazarr': {
+                    target: env.VITE_BAZARR_URL,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/bazarr/, ''),
+                    headers: {'X-API-KEY': env.BAZARR_API_KEY},
+                },
             },
         },
     }
