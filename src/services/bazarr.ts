@@ -1,49 +1,41 @@
-import {formatUptime} from '../format'
 import type {Service} from '../types'
 import {get} from './client'
 
 /** Proxied in vite.config.ts; the prefix is stripped before forwarding. */
 const BASE = '/api/bazarr/api'
 
-type SystemStatus = {
-    data: {
-        bazarr_version: string
-        /** Unix seconds, unlike the *arr apps' ISO strings. */
-        start_time: number
-    }
-}
-
 type Badges = {
     episodes: number
     movies: number
+    /** Count of *problem* providers, not the total. */
+    providers: number
     status: number
+    sonarr_signalr: string
+    radarr_signalr: string
 }
 
-type Providers = {
-    data: {name: string; status: string}[]
-}
+type Providers = {data: {name: string; status: string}[]}
 
-/** Daily subtitle download counts, roughly the last month. */
 type HistoryStats = {
-    series: {date: string; count: number}[]
-    movies: {date: string; count: number}[]
-}
-
-function lastWeek(days: {count: number}[]): number {
-    return days.slice(-7).reduce((sum, d) => sum + d.count, 0)
+    series: {count: number}[]
+    movies: {count: number}[]
 }
 
 export async function fetchBazarr(): Promise<Service> {
     const [status, badges, providers, history] = await Promise.all([
-        get<SystemStatus>(`${BASE}/system/status`),
+        get<{data: {bazarr_version: string}}>(`${BASE}/system/status`),
         get<Badges>(`${BASE}/badges`),
         get<Providers>(`${BASE}/providers`),
-        get<HistoryStats>(`${BASE}/history/stats`),
+        get<HistoryStats>(`${BASE}/history/stats?timeFrame=week`),
     ])
 
-    const startedAt = new Date(status.data.start_time * 1000).toISOString()
+    const total = (days: {count: number}[]) =>
+        days.reduce((sum, d) => sum + d.count, 0)
+    const subsWeek = total(history.series) + total(history.movies)
+
+    const links = `${badges.sonarr_signalr} / ${badges.radarr_signalr}`
     const good = providers.data.filter((p) => p.status === 'Good').length
-    const subsWeek = lastWeek(history.series) + lastWeek(history.movies)
+
 
     return {
         name: 'Bazarr',
@@ -53,10 +45,21 @@ export async function fetchBazarr(): Promise<Service> {
         stats: [
             {label: 'Wanted eps', value: String(badges.episodes)},
             {label: 'Wanted movies', value: String(badges.movies)},
-            {label: 'Subs fetched (7d)', value: String(subsWeek)},
-            {label: 'Providers', value: `${good}/${providers.data.length}`},
-            {label: 'Health', value: badges.status === 0 ? 'OK' : `${badges.status} warn`},
-            {label: 'Uptime', value: formatUptime(startedAt)},
+            {label: 'Subs (7d)', value: String(subsWeek)},
+            {
+                label: 'Providers',
+                value: `${good}/${providers.data.length}`,
+            },
+            {
+                label: 'Arr links',
+                value: links,
+                tone: links === 'LIVE / LIVE' ? undefined : 'bad',
+            },
+            {
+                label: 'Health',
+                value: badges.status === 0 ? 'OK' : `${badges.status} warn`,
+                tone: badges.status > 0 ? 'warn' : undefined,
+            },
         ],
     }
 }

@@ -403,3 +403,12 @@ body {
 .dot--bad {
   background: var(--offline);
 }
+
+
+.stat__value--warn {
+  color: var(--loading);
+}
+
+.stat__value--bad {
+  color: var(--offline);
+}

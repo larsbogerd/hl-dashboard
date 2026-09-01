@@ -42,7 +42,13 @@ export function ServiceCard({service}: Props) {
                 {stats.map((stat) => (
                     <div className="stat" key={stat.label}>
                         <dt className="stat__label">{stat.label}</dt>
-                        <dd className="stat__value">{stat.value}</dd>
+                        <dd
+                            className={`stat__value ${
+                                stat.tone ? `stat__value--${stat.tone}` : ''
+                            }`}
+                        >
+                            {stat.value}
+                        </dd>
                     </div>
                 ))}
             </dl>

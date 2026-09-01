@@ -7,14 +7,16 @@ const BASE = '/api/qbittorrent/api/v2'
 
 type Torrent = {
     state: string
+    /** Bytes actually on disk, unlike `size` which is the full torrent. */
     completed: number
 }
 
 type MainData = {
     server_state: {
-        alltime_dl: number
-        alltime_ul: number
+        dl_info_speed: number
+        up_info_speed: number
     }
+    /** Keyed by torrent hash. */
     torrents: Record<string, Torrent>
 }
 
@@ -48,12 +50,12 @@ export async function fetchQbittorrent(): Promise<Service> {
                 value: String(torrents.filter((t) => isSeeding(t.state)).length),
             },
             {
-                label: 'All time down',
-                value: formatBytes(main.server_state.alltime_dl),
+                label: 'Down',
+                value: `${formatBytes(main.server_state.dl_info_speed)}/s`,
             },
             {
-                label: 'All time up',
-                value: formatBytes(main.server_state.alltime_ul)
+                label: 'Up',
+                value: `${formatBytes(main.server_state.up_info_speed)}/s`,
             },
         ],
     }
