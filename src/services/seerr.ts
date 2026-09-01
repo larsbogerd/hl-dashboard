@@ -1,5 +1,5 @@
-import type {Service} from '../types'
-import {get} from './client'
+import type { Service } from '../types'
+import { get } from './client'
 
 /** Proxied in vite.config.ts; the prefix is stripped before forwarding. */
 const BASE = '/api/seerr/api/v1'
@@ -17,7 +17,7 @@ type IssueCount = {
 
 export async function fetchSeerr(): Promise<Service> {
     const [status, counts, issues] = await Promise.all([
-        get<{version: string}>(`${BASE}/status`),
+        get<{ version: string }>(`${BASE}/status`),
         get<RequestCount>(`${BASE}/request/count`),
         get<IssueCount>(`${BASE}/issue/count`),
     ])
@@ -38,8 +38,8 @@ export async function fetchSeerr(): Promise<Service> {
                 value: String(issues.open),
                 tone: issues.open > 0 ? 'warn' : undefined,
             },
-            {label: 'Processing', value: String(counts.processing)},
-            {label: 'Completed', value: String(counts.completed)},
+            { label: 'Processing', value: String(counts.processing) },
+            { label: 'Completed', value: String(counts.completed) },
         ],
     }
 }

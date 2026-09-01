@@ -1,5 +1,5 @@
-import type {Service} from '../types'
-import {get} from './client'
+import type { Service } from '../types'
+import { get } from './client'
 
 /** Proxied in vite.config.ts; the prefix is stripped before forwarding. */
 const BASE = '/api/plex'
@@ -20,11 +20,13 @@ type Root = {
 }
 
 type Container = {
-    MediaContainer: {size: number; totalSize?: number}
+    MediaContainer: { size: number; totalSize?: number }
 }
 
 async function count(filter: string): Promise<number> {
-    const res = await get<Container>(`${BASE}/library/all?${filter}&${COUNT_ONLY}`)
+    const res = await get<Container>(
+        `${BASE}/library/all?${filter}&${COUNT_ONLY}`,
+    )
     return res.MediaContainer.totalSize ?? 0
 }
 
@@ -43,7 +45,8 @@ export async function fetchPlex(): Promise<Service> {
 
     const server = root.MediaContainer
     const remoteOk =
-        server.myPlexSigninState === 'ok' && server.myPlexMappingState === 'mapped'
+        server.myPlexSigninState === 'ok' &&
+        server.myPlexMappingState === 'mapped'
 
     return {
         name: 'Plex',
@@ -52,14 +55,14 @@ export async function fetchPlex(): Promise<Service> {
         version: server.version.split('-')[0],
         url: import.meta.env.VITE_PLEX_URL,
         stats: [
-            {label: 'Streaming', value: String(sessions.MediaContainer.size)},
+            { label: 'Streaming', value: String(sessions.MediaContainer.size) },
             {
                 label: 'Transcodes',
                 value: String(server.transcoderActiveVideoSessions),
             },
-            {label: 'Movies', value: String(movies)},
-            {label: 'Episodes', value: String(episodes)},
-            {label: 'Added (7d)', value: String(added)},
+            { label: 'Movies', value: String(movies) },
+            { label: 'Episodes', value: String(episodes) },
+            { label: 'Added (7d)', value: String(added) },
             {
                 label: 'Remote',
                 value: remoteOk ? 'OK' : 'Unavailable',

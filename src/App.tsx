@@ -1,12 +1,12 @@
-import {ServiceCard} from './components/ServiceCard'
-import {SystemPanel} from './components/SystemPanel'
-import {CONNECTORS} from './services'
-import {fetchTrueNas} from './services/truenas'
-import type {Service} from './types'
-import {useQueries, useQuery} from '@tanstack/react-query'
+import { ServiceCard } from './components/ServiceCard'
+import { SystemPanel } from './components/SystemPanel'
+import { CONNECTORS } from './services'
+import { fetchTrueNas } from './services/truenas'
+import type { Service } from './types'
+import { useQueries, useQuery } from '@tanstack/react-query'
 
 function App() {
-    const {data: system} = useQuery({
+    const { data: system } = useQuery({
         queryKey: ['truenas'],
         queryFn: fetchTrueNas,
         refetchInterval: 2_000,
@@ -20,7 +20,7 @@ function App() {
     })
 
     const services: Service[] = results.map((result, i) => {
-        const {name, url} = CONNECTORS[i]
+        const { name, url } = CONNECTORS[i]
         return (
             result.data ?? {
                 name,
@@ -44,11 +44,11 @@ function App() {
                 </div>
             </header>
 
-            {system && <SystemPanel info={system}/>}
+            {system && <SystemPanel info={system} />}
 
             <section className="grid">
                 {services.map((service) => (
-                    <ServiceCard key={service.name} service={service}/>
+                    <ServiceCard key={service.name} service={service} />
                 ))}
             </section>
         </div>

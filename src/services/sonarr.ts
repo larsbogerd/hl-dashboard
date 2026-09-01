@@ -1,12 +1,12 @@
-import {formatAgo, formatBytes} from '../format'
-import type {Service} from '../types'
-import {get} from './client'
+import { formatAgo, formatBytes } from '../format'
+import type { Service } from '../types'
+import { get } from './client'
 
 /** Proxied in vite.config.ts; the prefix is stripped before forwarding. */
 const BASE = '/api/sonarr/api/v3'
 
 type Series = {
-    statistics?: {episodeFileCount: number; sizeOnDisk: number}
+    statistics?: { episodeFileCount: number; sizeOnDisk: number }
 }
 
 type QueueStatus = {
@@ -15,9 +15,9 @@ type QueueStatus = {
     warnings: boolean
 }
 
-type Page = {totalRecords: number}
+type Page = { totalRecords: number }
 
-type Task = {name: string; lastExecution: string}
+type Task = { name: string; lastExecution: string }
 
 /** Last run of a scheduled job — proves the scheduler is alive. */
 export function taskRan(tasks: Task[], name: string): string {
@@ -27,7 +27,7 @@ export function taskRan(tasks: Task[], name: string): string {
 
 export async function fetchSonarr(): Promise<Service> {
     const [status, series, queue, missing, tasks] = await Promise.all([
-        get<{version: string}>(`${BASE}/system/status`),
+        get<{ version: string }>(`${BASE}/system/status`),
         get<Series[]>(`${BASE}/series`),
         get<QueueStatus>(`${BASE}/queue/status`),
         get<Page>(`${BASE}/wanted/missing?pageSize=1`),
@@ -43,23 +43,22 @@ export async function fetchSonarr(): Promise<Service> {
         0,
     )
 
-
     return {
         name: 'Sonarr',
         status: 'online',
         version: status.version,
         url: import.meta.env.VITE_SONARR_URL,
         stats: [
-            {label: 'Series', value: String(series.length)},
-            {label: 'Episodes', value: String(episodes)},
-            {label: 'On disk', value: formatBytes(onDisk)},
+            { label: 'Series', value: String(series.length) },
+            { label: 'Episodes', value: String(episodes) },
+            { label: 'On disk', value: formatBytes(onDisk) },
             {
                 label: 'Queue',
                 value: String(queue.totalCount),
                 tone: queue.errors ? 'warn' : undefined,
             },
-            {label: 'Missing', value: String(missing.totalRecords)},
-            {label: 'RSS sync', value: taskRan(tasks, 'Rss Sync')},
+            { label: 'Missing', value: String(missing.totalRecords) },
+            { label: 'RSS sync', value: taskRan(tasks, 'Rss Sync') },
         ],
     }
 }

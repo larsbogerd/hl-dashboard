@@ -16,11 +16,7 @@ jobs:
           node-version: 22
           cache: npm
 
-      # `ci` not `install`: installs exactly what the lockfile pins
-      # and fails if it has drifted from package.json.
       - run: npm ci
-
       - run: npm run lint
-
-      # Also typechecks — the build script is `tsc -b && vite build`.
+      - run: npm run format:check
       - run: npm run build
