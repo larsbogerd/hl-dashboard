@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+    readonly VITE_TRUENAS_URL: string
     readonly VITE_SONARR_URL: string
     readonly VITE_RADARR_URL: string
     readonly VITE_PROWLARR_URL: string

@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react'
 import {ServiceCard} from './components/ServiceCard'
+import {SystemPanel} from './components/SystemPanel'
 import {CONNECTORS} from './services'
+import {fetchTrueNas, type SystemInfo} from './services/truenas'
 import type {Service} from './types'
 
 function initialServices(): Service[] {
@@ -14,6 +16,13 @@ function initialServices(): Service[] {
 
 function App() {
     const [connected, setConnected] = useState<Service[]>(initialServices)
+    const [system, setSystem] = useState<SystemInfo | null>(null)
+
+    useEffect(() => {
+        fetchTrueNas()
+            .then(setSystem)
+            .catch((err: unknown) => console.error('TrueNAS fetch failed:', err))
+    }, [])
 
     useEffect(() => {
         CONNECTORS.forEach(({name, url, fetch}, index) => {
@@ -50,6 +59,8 @@ function App() {
                     </p>
                 </div>
             </header>
+
+            {system && <SystemPanel info={system}/>}
 
             <section className="grid">
                 {connected.map((service) => (

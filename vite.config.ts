@@ -11,6 +11,14 @@ export default defineConfig(({mode}) => {
             // One entry per wired-up service. /api/<name>/... is stripped
             // before forwarding, so paths match each app's real API.
             proxy: {
+                '/api/truenas': {
+                    target: env.VITE_TRUENAS_URL,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/truenas/, ''),
+                    headers: {
+                        Authorization: `Bearer ${env.TRUENAS_API_KEY}`,
+                    },
+                },
                 '/api/sonarr': {
                     target: env.VITE_SONARR_URL,
                     changeOrigin: true,
