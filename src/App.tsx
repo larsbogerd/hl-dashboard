@@ -9,11 +9,13 @@ function App() {
     const {data: system} = useQuery({
         queryKey: ['truenas'],
         queryFn: fetchTrueNas,
+        refetchInterval: 2_000,
     })
     const results = useQueries({
         queries: CONNECTORS.map((c) => ({
             queryKey: ['service', c.name],
             queryFn: c.fetch,
+            refetchInterval: c.interval ?? 30_000,
         })),
     })
 
