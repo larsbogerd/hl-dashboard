@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # `ci` not `install`: installs exactly what the lockfile pins
+      # and fails if it has drifted from package.json.
+      - run: npm ci
+
+      - run: npm run lint
+
+      # Also typechecks — the build script is `tsc -b && vite build`.
+      - run: npm run build
