@@ -8,4 +8,5 @@ interface ImportMetaEnv {
     readonly VITE_BAZARR_URL: string
     readonly VITE_QBITTORRENT_URL: string
     readonly VITE_PLEX_URL: string
+    readonly VITE_SEERR_URL: string
 }

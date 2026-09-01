@@ -13,4 +13,5 @@ export type Service = {
     version?: string
     url?: string
     stats: Stat[]
+    recent?: string[]
 }

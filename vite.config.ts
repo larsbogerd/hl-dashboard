@@ -43,6 +43,12 @@ export default defineConfig(({mode}) => {
                     rewrite: (path) => path.replace(/^\/api\/bazarr/, ''),
                     headers: {'X-API-KEY': env.BAZARR_API_KEY},
                 },
+                '/api/seerr': {
+                    target: env.VITE_SEERR_URL,
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api\/seerr/, ''),
+                    headers: {'X-Api-Key': env.SEERR_API_KEY},
+                },
                 // No key: Plex allows unauthenticated LAN access.
                 // Accept header or it answers in XML.
                 '/api/plex': {
