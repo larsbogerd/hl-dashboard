@@ -40,7 +40,6 @@ export async function fetchBazarr(): Promise<Service> {
         name: 'Bazarr',
         status: 'online',
         version: status.data.bazarr_version,
-        url: import.meta.env.VITE_BAZARR_URL,
         stats: [
             { label: 'Wanted eps', value: String(badges.episodes) },
             { label: 'Wanted movies', value: String(badges.movies) },

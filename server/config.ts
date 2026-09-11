@@ -11,31 +11,31 @@ function env(name: string): string {
     return value
 }
 
-const qbittorrent = env('VITE_QBITTORRENT_URL')
+const qbittorrent = env('QBITTORRENT_URL')
 
 export const UPSTREAMS: Record<string, Upstream> = {
     sonarr: {
-        url: env('VITE_SONARR_URL'),
+        url: env('SONARR_URL'),
         headers: { 'X-Api-Key': env('SONARR_API_KEY') },
     },
     radarr: {
-        url: env('VITE_RADARR_URL'),
+        url: env('RADARR_URL'),
         headers: { 'X-Api-Key': env('RADARR_API_KEY') },
     },
     prowlarr: {
-        url: env('VITE_PROWLARR_URL'),
+        url: env('PROWLARR_URL'),
         headers: { 'X-Api-Key': env('PROWLARR_API_KEY') },
     },
     bazarr: {
-        url: env('VITE_BAZARR_URL'),
+        url: env('BAZARR_URL'),
         headers: { 'X-API-KEY': env('BAZARR_API_KEY') },
     },
     seerr: {
-        url: env('VITE_SEERR_URL'),
+        url: env('SEERR_URL'),
         headers: { 'X-Api-Key': env('SEERR_API_KEY') },
     },
     truenas: {
-        url: env('VITE_TRUENAS_URL'),
+        url: env('TRUENAS_URL'),
         headers: { Authorization: `Bearer ${env('TRUENAS_API_KEY')}` },
     },
     // No key — auth is bypassed for the LAN subnet. Origin/Referer must
@@ -46,7 +46,7 @@ export const UPSTREAMS: Record<string, Upstream> = {
     },
     // No key either. Without the Accept header Plex answers in XML.
     plex: {
-        url: env('VITE_PLEX_URL'),
+        url: env('PLEX_URL'),
         headers: { Accept: 'application/json' },
     },
 }

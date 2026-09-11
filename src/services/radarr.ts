@@ -27,7 +27,6 @@ export async function fetchRadarr(): Promise<Service> {
         name: 'Radarr',
         status: 'online',
         version: status.version,
-        url: import.meta.env.VITE_RADARR_URL,
         stats: [
             { label: 'Movies', value: String(movies.length) },
             {

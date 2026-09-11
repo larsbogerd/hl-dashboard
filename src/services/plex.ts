@@ -53,7 +53,6 @@ export async function fetchPlex(): Promise<Service> {
         status: 'online',
         // Trim the build hash: 1.43.3.10896-cb3ebc72d
         version: server.version.split('-')[0],
-        url: import.meta.env.VITE_PLEX_URL,
         stats: [
             { label: 'Streaming', value: String(sessions.MediaContainer.size) },
             {

@@ -47,7 +47,6 @@ export async function fetchSonarr(): Promise<Service> {
         name: 'Sonarr',
         status: 'online',
         version: status.version,
-        url: import.meta.env.VITE_SONARR_URL,
         stats: [
             { label: 'Series', value: String(series.length) },
             { label: 'Episodes', value: String(episodes) },

@@ -51,7 +51,6 @@ export async function fetchProwlarr(): Promise<Service> {
         name: 'Prowlarr',
         status: 'online',
         version: status.version,
-        url: import.meta.env.VITE_PROWLARR_URL,
         stats: [
             { label: 'Indexers', value: `${enabled} / ${indexers.length}` },
             {
