@@ -3,6 +3,16 @@ import { UPSTREAMS } from './config.ts'
 
 const app = Fastify({ logger: true })
 
+/** Link URLs for the cards. Read at runtime, so nothing is baked into the bundle. */
+app.get('/api/config', () =>
+    Object.fromEntries(
+        Object.entries(UPSTREAMS).map(([name, upstream]) => [
+            name,
+            upstream.url,
+        ]),
+    ),
+)
+
 /** /api/<service>/<path> -> that service, with its credentials attached. */
 app.route({
     method: ['GET', 'POST'],

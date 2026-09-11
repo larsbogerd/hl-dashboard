@@ -9,7 +9,7 @@ import { fetchSonarr } from './sonarr'
 
 type Connector = {
     name: string
-    url: string
+    id: string
     fetch: () => Promise<Service>
     interval?: number
 }
@@ -17,31 +17,31 @@ type Connector = {
 export const CONNECTORS: Connector[] = [
     {
         name: 'Sonarr',
-        url: import.meta.env.VITE_SONARR_URL,
+        id: 'sonarr',
         fetch: fetchSonarr,
     },
     {
         name: 'Radarr',
-        url: import.meta.env.VITE_RADARR_URL,
+        id: 'radarr',
         fetch: fetchRadarr,
         interval: 600_000,
     },
     {
         name: 'Prowlarr',
-        url: import.meta.env.VITE_PROWLARR_URL,
+        id: 'prowlarr',
         fetch: fetchProwlarr,
     },
     {
         name: 'Bazarr',
-        url: import.meta.env.VITE_BAZARR_URL,
+        id: 'bazarr',
         fetch: fetchBazarr,
     },
     {
         name: 'qBittorrent',
-        url: import.meta.env.VITE_QBITTORRENT_URL,
+        id: 'qbittorrent',
         fetch: fetchQbittorrent,
         interval: 2_000,
     },
-    { name: 'Plex', url: import.meta.env.VITE_PLEX_URL, fetch: fetchPlex },
-    { name: 'Seerr', url: import.meta.env.VITE_SEERR_URL, fetch: fetchSeerr },
+    { name: 'Plex', id: 'plex', fetch: fetchPlex },
+    { name: 'Seerr', id: 'seerr', fetch: fetchSeerr },
 ]

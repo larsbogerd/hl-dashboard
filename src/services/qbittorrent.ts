@@ -37,7 +37,6 @@ export async function fetchQbittorrent(): Promise<Service> {
         name: 'qBittorrent',
         status: 'online',
         version: version.replace(/^v/, ''),
-        url: import.meta.env.VITE_QBITTORRENT_URL,
         stats: [
             { label: 'Active torrents', value: String(torrents.length) },
             { label: 'Size on disk', value: formatBytes(onDisk) },

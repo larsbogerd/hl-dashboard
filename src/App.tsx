@@ -1,11 +1,18 @@
 import { ServiceCard } from './components/ServiceCard'
 import { SystemPanel } from './components/SystemPanel'
 import { CONNECTORS } from './services'
+import { get } from './services/client'
 import { fetchTrueNas } from './services/truenas'
 import type { Service } from './types'
 import { useQueries, useQuery } from '@tanstack/react-query'
 
 function App() {
+    // Link URLs come from the server. They don't change while it runs.
+    const { data: links } = useQuery({
+        queryKey: ['config'],
+        queryFn: () => get<Record<string, string>>('/api/config'),
+        staleTime: Infinity,
+    })
     const { data: system } = useQuery({
         queryKey: ['truenas'],
         queryFn: fetchTrueNas,
@@ -20,15 +27,16 @@ function App() {
     })
 
     const services: Service[] = results.map((result, i) => {
-        const { name, url } = CONNECTORS[i]
-        return (
-            result.data ?? {
-                name,
-                url: url || undefined,
-                status: result.isPending ? 'loading' : 'offline',
-                stats: [],
-            }
-        )
+        const { name, id } = CONNECTORS[i]
+        const url = links?.[id]
+        return result.data
+            ? { ...result.data, url }
+            : {
+                  name,
+                  url,
+                  status: result.isPending ? 'loading' : 'offline',
+                  stats: [],
+              }
     })
 
     const onlineCount = services.filter((s) => s.status === 'online').length

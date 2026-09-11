@@ -26,7 +26,6 @@ export async function fetchSeerr(): Promise<Service> {
         name: 'Seerr',
         status: 'online',
         version: status.version,
-        url: import.meta.env.VITE_SEERR_URL,
         stats: [
             {
                 label: 'Pending',
