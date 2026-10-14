@@ -5,7 +5,7 @@ export type Upstream = {
     headers: Record<string, string>
 }
 
-function env(name: string): string {
+export function env(name: string): string {
     const value = process.env[name]
     if (!value) throw new Error(`Missing ${name} — see .env.example`)
     return value
@@ -33,10 +33,6 @@ export const UPSTREAMS: Record<string, Upstream> = {
     seerr: {
         url: env('SEERR_URL'),
         headers: { 'X-Api-Key': env('SEERR_API_KEY') },
-    },
-    truenas: {
-        url: env('TRUENAS_URL'),
-        headers: { Authorization: `Bearer ${env('TRUENAS_API_KEY')}` },
     },
     // No key — auth is bypassed for the LAN subnet. Origin/Referer must
     // match or qBittorrent's CSRF check answers 401.

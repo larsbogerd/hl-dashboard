@@ -1,5 +1,5 @@
 import { ServiceCard } from './components/ServiceCard'
-import { SystemPanel } from './components/SystemPanel'
+import { SystemPanel, SystemPanelOffline } from './components/SystemPanel'
 import { CONNECTORS } from './services'
 import { get } from './services/client'
 import { fetchTrueNas } from './services/truenas'
@@ -13,7 +13,7 @@ function App() {
         queryFn: () => get<Record<string, string>>('/api/config'),
         staleTime: Infinity,
     })
-    const { data: system } = useQuery({
+    const truenas = useQuery({
         queryKey: ['truenas'],
         queryFn: fetchTrueNas,
         refetchInterval: 2_000,
@@ -39,6 +39,16 @@ function App() {
               }
     })
 
+    // Check isError before data. After a failed fetch TanStack keeps the last
+    // good `data` around, so a dead NAS would otherwise keep showing its last
+    // numbers as if they were live.
+    let systemPanel = null
+    if (truenas.isError) {
+        systemPanel = <SystemPanelOffline />
+    } else if (truenas.data) {
+        systemPanel = <SystemPanel info={truenas.data} />
+    }
+
     const onlineCount = services.filter((s) => s.status === 'online').length
 
     return (
@@ -52,7 +62,7 @@ function App() {
                 </div>
             </header>
 
-            {system && <SystemPanel info={system} />}
+            {systemPanel}
 
             <section className="grid">
                 {services.map((service) => (

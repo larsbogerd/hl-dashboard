@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import { UPSTREAMS } from './config.ts'
+import { getSystemInfo, startTrueNas } from './truenas.ts'
 
 const app = Fastify({ logger: true })
 
@@ -12,6 +13,15 @@ app.get('/api/config', () =>
         ]),
     ),
 )
+
+/** TrueNAS system stats, from the WebSocket in server/truenas.ts. Not proxied. */
+app.get('/api/system', (_request, reply) => {
+    const system = getSystemInfo()
+    if (system === null) {
+        return reply.code(503).send({ error: 'Not connected to TrueNAS yet' })
+    }
+    return system
+})
 
 /** /api/<service>/<path> -> that service, with its credentials attached. */
 app.route({
@@ -37,5 +47,6 @@ app.route({
     },
 })
 
+startTrueNas()
 await app.listen({ port: 3001 })
 console.log('API proxy on http://localhost:3001')
