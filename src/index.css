@@ -221,6 +221,19 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+.system__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+/* No tiles below the header, so drop the gap it normally leaves. */
+.system--offline .system__head {
+    margin-bottom: 0;
+}
+
 .system__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));

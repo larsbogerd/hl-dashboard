@@ -126,7 +126,18 @@ function connect(): void {
     })
 
     socket.addEventListener('error', () => {
-        console.error('TrueNAS: connection error')
+        // Node's WebSocket error event carries no details: a refused connection
+        // and a rejected certificate look exactly the same. So check the one
+        // setting that's easy to forget, and say so if it's missing.
+        if (process.env.NODE_TLS_REJECT_UNAUTHORIZED !== '0') {
+            console.error(
+                'TrueNAS: connection failed. TrueNAS uses a self-signed ' +
+                    'certificate, so set NODE_TLS_REJECT_UNAUTHORIZED=0 in ' +
+                    '.env (see .env.example).',
+            )
+            return
+        }
+        console.error('TrueNAS: connection failed. Is the NAS reachable?')
     })
 
     // Fires after every disconnect, including a failed first attempt.

@@ -158,3 +158,18 @@ export function SystemPanel({ info }: { info: SystemInfo }) {
         </section>
     )
 }
+
+/** Shown when the server can't reach TrueNAS: the panel's frame, no numbers. */
+export function SystemPanelOffline() {
+    return (
+        <section className="system system--offline">
+            <header className="system__head">
+                <h2 className="system__host">TrueNAS</h2>
+                <span className="system__status">
+                    <span className="dot dot--bad" aria-hidden="true" />
+                    Offline
+                </span>
+            </header>
+        </section>
+    )
+}
