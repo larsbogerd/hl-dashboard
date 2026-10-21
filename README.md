@@ -6,7 +6,8 @@ per-pool storage.
 
 Runs locally on a NAS. Personal project, built to get properly familiar with React and TypeScript.
 
-WIP! Layout and panels are still changing.
+WIP example below. Layout and panels are still changing.
+
 ![Homelab dashboard](docs/preview.webp)
 
 
