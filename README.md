@@ -6,6 +6,11 @@ per-pool storage.
 
 Runs locally on a NAS. Personal project, built to get properly familiar with React and TypeScript.
 
+WIP! Layout and panels are still changing.
+![Homelab dashboard](docs/preview.webp)
+
+
+
 ### Stack
 
 - React 19 + TypeScript, built with Vite
