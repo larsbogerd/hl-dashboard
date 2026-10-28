@@ -43,21 +43,37 @@ export async function fetchSonarr(): Promise<Service> {
         0,
     )
 
+    const issues: string[] = []
+    if (queue.errors) {
+        issues.push('Download queue has errors')
+    }
+
+    // How much of what you want is on disk. Missing = aired but no file yet.
+    // An empty library counts as complete, so this never divides by 0.
+    const wanted = episodes + missing.totalRecords
+    const percent = wanted > 0 ? (episodes / wanted) * 100 : 100
+
     return {
         name: 'Sonarr',
         status: 'online',
         version: status.version,
+        headline: { label: 'episodes', value: episodes.toLocaleString() },
+        meter: {
+            percent,
+            label: `${Math.floor(percent)}% on disk, ${missing.totalRecords} missing`,
+        },
         stats: [
             { label: 'Series', value: String(series.length) },
-            { label: 'Episodes', value: String(episodes) },
             { label: 'On disk', value: formatBytes(onDisk) },
             {
                 label: 'Queue',
                 value: String(queue.totalCount),
                 tone: queue.errors ? 'warn' : undefined,
             },
-            { label: 'Missing', value: String(missing.totalRecords) },
             { label: 'RSS sync', value: taskRan(tasks, 'Rss Sync') },
         ],
+        issues,
+        activity:
+            queue.totalCount > 0 ? `${queue.totalCount} in queue` : undefined,
     }
 }

@@ -1,3 +1,4 @@
+import { plural } from '../format'
 import type { Service } from '../types'
 import { get } from './client'
 
@@ -33,31 +34,34 @@ export async function fetchBazarr(): Promise<Service> {
         days.reduce((sum, d) => sum + d.count, 0)
     const subsWeek = total(history.series) + total(history.movies)
 
-    const links = `${badges.sonarr_signalr} / ${badges.radarr_signalr}`
     const good = providers.data.filter((p) => p.status === 'Good').length
+
+    // These only matter when they fail, so they're issues, not stats.
+    const issues: string[] = []
+    if (badges.sonarr_signalr !== 'LIVE') {
+        issues.push(`Link to Sonarr is ${badges.sonarr_signalr.toLowerCase()}`)
+    }
+    if (badges.radarr_signalr !== 'LIVE') {
+        issues.push(`Link to Radarr is ${badges.radarr_signalr.toLowerCase()}`)
+    }
+    if (badges.status > 0) {
+        issues.push(plural(badges.status, 'health warning'))
+    }
 
     return {
         name: 'Bazarr',
         status: 'online',
         version: status.data.bazarr_version,
+        headline: { label: 'subtitles this week', value: String(subsWeek) },
         stats: [
-            { label: 'Wanted eps', value: String(badges.episodes) },
+            { label: 'Wanted episodes', value: String(badges.episodes) },
             { label: 'Wanted movies', value: String(badges.movies) },
-            { label: 'Subs (7d)', value: String(subsWeek) },
             {
                 label: 'Providers',
-                value: `${good}/${providers.data.length}`,
-            },
-            {
-                label: 'Arr links',
-                value: links,
-                tone: links === 'LIVE / LIVE' ? undefined : 'bad',
-            },
-            {
-                label: 'Health',
-                value: badges.status === 0 ? 'OK' : `${badges.status} warn`,
-                tone: badges.status > 0 ? 'warn' : undefined,
+                value: `${good} / ${providers.data.length}`,
+                tone: good < providers.data.length ? 'warn' : undefined,
             },
         ],
+        issues,
     }
 }

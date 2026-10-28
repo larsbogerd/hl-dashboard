@@ -23,24 +23,36 @@ export async function fetchRadarr(): Promise<Service> {
 
     const onDisk = movies.reduce((sum, m) => sum + (m.sizeOnDisk ?? 0), 0)
 
+    const issues: string[] = []
+    if (queue.errors) {
+        issues.push('Download queue has errors')
+    }
+
+    // Same bar as Sonarr: how much of what you want is on disk.
+    const downloaded = movies.filter((m) => m.hasFile).length
+    const wanted = downloaded + missing.totalRecords
+    const percent = wanted > 0 ? (downloaded / wanted) * 100 : 100
+
     return {
         name: 'Radarr',
         status: 'online',
         version: status.version,
+        headline: { label: 'movies', value: movies.length.toLocaleString() },
+        meter: {
+            percent,
+            label: `${Math.floor(percent)}% on disk, ${missing.totalRecords} missing`,
+        },
         stats: [
-            { label: 'Movies', value: String(movies.length) },
-            {
-                label: 'Downloaded',
-                value: String(movies.filter((m) => m.hasFile).length),
-            },
             { label: 'On disk', value: formatBytes(onDisk) },
             {
                 label: 'Queue',
                 value: String(queue.totalCount),
                 tone: queue.errors ? 'warn' : undefined,
             },
-            { label: 'Missing', value: String(missing.totalRecords) },
             { label: 'RSS sync', value: taskRan(tasks, 'Rss Sync') },
         ],
+        issues,
+        activity:
+            queue.totalCount > 0 ? `${queue.totalCount} in queue` : undefined,
     }
 }

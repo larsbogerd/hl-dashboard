@@ -1,3 +1,4 @@
+import { plural } from '../format'
 import type { Service } from '../types'
 import { get } from './client'
 
@@ -48,25 +49,29 @@ export async function fetchPlex(): Promise<Service> {
         server.myPlexSigninState === 'ok' &&
         server.myPlexMappingState === 'mapped'
 
+    const streams = sessions.MediaContainer.size
+
+    const issues: string[] = []
+    if (!remoteOk) {
+        issues.push('Remote access is unavailable')
+    }
+
     return {
         name: 'Plex',
         status: 'online',
         // Trim the build hash: 1.43.3.10896-cb3ebc72d
         version: server.version.split('-')[0],
+        headline: { label: 'streaming', value: String(streams) },
         stats: [
-            { label: 'Streaming', value: String(sessions.MediaContainer.size) },
             {
                 label: 'Transcodes',
                 value: String(server.transcoderActiveVideoSessions),
             },
-            { label: 'Movies', value: String(movies) },
-            { label: 'Episodes', value: String(episodes) },
-            { label: 'Added (7d)', value: String(added) },
-            {
-                label: 'Remote',
-                value: remoteOk ? 'OK' : 'Unavailable',
-                tone: remoteOk ? undefined : 'bad',
-            },
+            { label: 'Movies', value: movies.toLocaleString() },
+            { label: 'Episodes', value: episodes.toLocaleString() },
+            { label: 'Added this week', value: String(added) },
         ],
+        issues,
+        activity: streams > 0 ? plural(streams, 'stream') : undefined,
     }
 }

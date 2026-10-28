@@ -1,3 +1,4 @@
+import { plural } from '../format'
 import type { Service } from '../types'
 import { get } from './client'
 
@@ -22,23 +23,31 @@ export async function fetchSeerr(): Promise<Service> {
         get<IssueCount>(`${BASE}/issue/count`),
     ])
 
+    // Both of these wait on you, so they go to the top of the page.
+    const needsLook: string[] = []
+    if (counts.pending > 0) {
+        needsLook.push(
+            `${plural(counts.pending, 'request')} waiting for approval`,
+        )
+    }
+    if (issues.open > 0) {
+        needsLook.push(`${plural(issues.open, 'open issue')} reported`)
+    }
+
     return {
         name: 'Seerr',
         status: 'online',
         version: status.version,
+        headline: { label: 'pending', value: String(counts.pending) },
         stats: [
-            {
-                label: 'Pending',
-                value: String(counts.pending),
-                tone: counts.pending > 0 ? 'warn' : undefined,
-            },
+            { label: 'Processing', value: String(counts.processing) },
+            { label: 'Completed', value: String(counts.completed) },
             {
                 label: 'Issues',
                 value: String(issues.open),
                 tone: issues.open > 0 ? 'warn' : undefined,
             },
-            { label: 'Processing', value: String(counts.processing) },
-            { label: 'Completed', value: String(counts.completed) },
         ],
+        issues: needsLook,
     }
 }
