@@ -47,12 +47,21 @@ export async function fetchProwlarr(): Promise<Service> {
         sum(stats, (i) => i.numberOfFailedRssQueries) +
         sum(stats, (i) => i.numberOfFailedGrabs)
 
+    // Prowlarr's own health checks already say what's wrong in plain words.
+    const issues: string[] = []
+    for (const check of health) {
+        issues.push(check.message)
+    }
+
     return {
         name: 'Prowlarr',
         status: 'online',
         version: status.version,
+        headline: {
+            label: 'indexers on',
+            value: `${enabled} / ${indexers.length}`,
+        },
         stats: [
-            { label: 'Indexers', value: `${enabled} / ${indexers.length}` },
             {
                 label: 'Failing',
                 value: String(failing.length),
@@ -73,11 +82,7 @@ export async function fetchProwlarr(): Promise<Service> {
                 value: String(failed),
                 tone: failed > 0 ? 'warn' : undefined,
             },
-            {
-                label: 'Health',
-                value: health.length === 0 ? 'OK' : `${health.length} warn`,
-                tone: health.length > 0 ? 'warn' : undefined,
-            },
         ],
+        issues,
     }
 }

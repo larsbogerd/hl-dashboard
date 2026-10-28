@@ -1,5 +1,7 @@
 import { ServiceCard } from './components/ServiceCard'
+import { StatusBar, type Notice } from './components/StatusBar'
 import { SystemPanel, SystemPanelOffline } from './components/SystemPanel'
+import { iconUrl } from './icons'
 import { CONNECTORS } from './services'
 import { get } from './services/client'
 import { fetchTrueNas } from './services/truenas'
@@ -29,15 +31,53 @@ function App() {
     const services: Service[] = results.map((result, i) => {
         const { name, id } = CONNECTORS[i]
         const url = links?.[id]
+        const icon = iconUrl(id)
         return result.data
-            ? { ...result.data, url }
+            ? { ...result.data, url, icon }
             : {
                   name,
                   url,
+                  icon,
                   status: result.isPending ? 'loading' : 'offline',
                   stats: [],
+                  issues: [],
               }
     })
+
+    // Everything that needs a look, and everything that's busy right now.
+    const attention: Notice[] = []
+    const activity: Notice[] = []
+    let online = 0
+    let checking = true
+    for (const service of services) {
+        if (service.status !== 'loading') {
+            checking = false
+        }
+        if (service.status === 'online') {
+            online++
+        }
+        if (service.status === 'offline') {
+            attention.push({
+                source: service.name,
+                message: 'Not responding',
+                tone: 'bad',
+            })
+        }
+        for (const issue of service.issues) {
+            attention.push({
+                source: service.name,
+                message: issue,
+                tone: 'warn',
+            })
+        }
+        if (service.activity) {
+            activity.push({
+                source: service.name,
+                message: service.activity,
+                tone: 'ok',
+            })
+        }
+    }
 
     // Check isError before data. After a failed fetch TanStack keeps the last
     // good `data` around, so a dead NAS would otherwise keep showing its last
@@ -45,31 +85,51 @@ function App() {
     let systemPanel = null
     if (truenas.isError) {
         systemPanel = <SystemPanelOffline />
+        attention.push({
+            source: 'TrueNAS',
+            message: 'Not responding',
+            tone: 'bad',
+        })
     } else if (truenas.data) {
         systemPanel = <SystemPanel info={truenas.data} />
+        for (const pool of truenas.data.pools) {
+            const used = Math.round((pool.allocated / pool.size) * 100)
+            if (!pool.healthy) {
+                attention.push({
+                    source: 'TrueNAS',
+                    message: `Pool ${pool.name} is ${pool.status.toLowerCase()}`,
+                    tone: 'bad',
+                })
+            } else if (used >= 90) {
+                attention.push({
+                    source: 'TrueNAS',
+                    message: `Pool ${pool.name} is ${used}% full`,
+                    tone: 'warn',
+                })
+            }
+        }
     }
 
-    const onlineCount = services.filter((s) => s.status === 'online').length
-
     return (
-        <div className="app">
-            <header className="page-head">
-                <div>
-                    <h1 className="page-title">Homelab dashboard</h1>
-                    <p className="page-sub">
-                        {onlineCount} of {services.length} services online
-                    </p>
-                </div>
-            </header>
+        <>
+            <StatusBar
+                attention={attention}
+                activity={activity}
+                online={online}
+                total={services.length}
+                checking={checking}
+            />
 
-            {systemPanel}
+            <main className="app">
+                {systemPanel}
 
-            <section className="grid">
-                {services.map((service) => (
-                    <ServiceCard key={service.name} service={service} />
-                ))}
-            </section>
-        </div>
+                <section className="grid" aria-label="Services">
+                    {services.map((service) => (
+                        <ServiceCard key={service.name} service={service} />
+                    ))}
+                </section>
+            </main>
+        </>
     )
 }
 

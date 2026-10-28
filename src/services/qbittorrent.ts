@@ -24,6 +24,12 @@ type MainData = {
 const isDownloading = (s: string) => s === 'downloading' || s.endsWith('DL')
 const isSeeding = (s: string) => s === 'uploading' || s.endsWith('UP')
 
+/**
+ * Download speed from the last 60 fetches, oldest first. One fetch every 2 s,
+ * so about 2 minutes. Lives here, outside React, and is lost on a reload.
+ */
+const speeds: number[] = []
+
 export async function fetchQbittorrent(): Promise<Service> {
     const [version, main] = await Promise.all([
         getText(`${BASE}/app/version`),
@@ -32,14 +38,27 @@ export async function fetchQbittorrent(): Promise<Service> {
 
     const torrents = Object.values(main.torrents)
     const onDisk = torrents.reduce((sum, t) => sum + t.completed, 0)
+    const down = main.server_state.dl_info_speed
+
+    speeds.push(down)
+    if (speeds.length > 60) {
+        speeds.shift()
+    }
 
     return {
         name: 'qBittorrent',
         status: 'online',
         version: version.replace(/^v/, ''),
+        headline: { label: 'down', value: `${formatBytes(down)}/s` },
+        // A copy: TanStack compares old and new data, and the same array
+        // changed in place would look like "nothing new".
+        history: { points: speeds.slice(), label: 'Last 2 minutes' },
         stats: [
-            { label: 'Active torrents', value: String(torrents.length) },
-            { label: 'Size on disk', value: formatBytes(onDisk) },
+            {
+                label: 'Up',
+                value: `${formatBytes(main.server_state.up_info_speed)}/s`,
+            },
+            { label: 'Torrents', value: String(torrents.length) },
             {
                 label: 'Leeching',
                 value: String(
@@ -52,14 +71,9 @@ export async function fetchQbittorrent(): Promise<Service> {
                     torrents.filter((t) => isSeeding(t.state)).length,
                 ),
             },
-            {
-                label: 'Down',
-                value: `${formatBytes(main.server_state.dl_info_speed)}/s`,
-            },
-            {
-                label: 'Up',
-                value: `${formatBytes(main.server_state.up_info_speed)}/s`,
-            },
+            { label: 'On disk', value: formatBytes(onDisk) },
         ],
+        issues: [],
+        activity: down > 0 ? 'Downloading' : undefined,
     }
 }

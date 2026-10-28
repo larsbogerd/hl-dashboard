@@ -18,6 +18,14 @@ export function formatUptime(startTime: string): string {
     if (hours > 0) return `${hours}h ${mins}m`
     return `${mins}m`
 }
+/** "1 request" / "3 requests". */
+export function plural(count: number, word: string): string {
+    if (count === 1) {
+        return `1 ${word}`
+    }
+    return `${count} ${word}s`
+}
+
 /** "36m ago" / "3h ago" / "2d ago" from an ISO timestamp. */
 export function formatAgo(iso: string): string {
     const ms = Date.now() - new Date(iso).getTime()
