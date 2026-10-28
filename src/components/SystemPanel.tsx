@@ -35,7 +35,9 @@ function PoolGauge({ pool }: { pool: Pool }) {
                     style={{ width: `${Math.min(100, used)}%` }}
                 />
             </div>
-            <span className="gauge__sub">{formatBytes(pool.free)} free</span>
+            <span className="gauge__sub">
+                {formatBytes(pool.free)} free of {formatBytes(pool.size)}
+            </span>
         </div>
     )
 }
@@ -55,13 +57,13 @@ export function SystemPanel({ info }: { info: SystemInfo }) {
                     <span className="machine__meta">{info.version}</span>
                 </h2>
                 <span className="machine__meta">
-                    Up {uptime(info.uptimeSeconds)}
+                    Uptime {uptime(info.uptimeSeconds)}
                 </span>
             </header>
 
             <div className="machine__grid">
                 <div className="gauge gauge--cpu">
-                    <span className="gauge__label">CPU</span>
+                    <span className="gauge__label">CPU usage</span>
                     <span className="gauge__value">
                         {Math.round(info.cpuPercent)}%
                         <span className="gauge__unit">
@@ -70,7 +72,7 @@ export function SystemPanel({ info }: { info: SystemInfo }) {
                     </span>
                     <Sparkline points={info.cpuHistory} max={100} />
                     <span className="gauge__sub">
-                        Last hour, {info.threads} threads
+                        {info.cores} cores / {info.threads} threads
                     </span>
                 </div>
 
@@ -92,27 +94,38 @@ export function SystemPanel({ info }: { info: SystemInfo }) {
                             style={{ width: `${pct(info.memCache)}%` }}
                         />
                     </div>
-                    <span className="gauge__sub">
-                        {formatBytes(info.memCache)} cache
+                    <span className="gauge__sub legend">
+                        <span className="legend__item">
+                            <span className="key key--services" />
+                            {formatBytes(memApps)} services
+                        </span>
+                        <span className="legend__item">
+                            <span className="key key--cache" />
+                            {formatBytes(info.memCache)} cache
+                        </span>
                     </span>
                 </div>
 
                 <div className="gauge">
                     <span className="gauge__label">Network</span>
+                    {/* Down and up, the same words qBittorrent uses. */}
                     <span className="gauge__value">
                         {formatBytes(info.netIn)}/s
-                        <span className="gauge__unit">in</span>
+                        <span className="gauge__unit">down</span>
                     </span>
                     <span className="gauge__value gauge__value--small">
                         {formatBytes(info.netOut)}/s
-                        <span className="gauge__unit">out</span>
+                        <span className="gauge__unit">up</span>
                     </span>
                 </div>
 
-                <div className="pools">
-                    {info.pools.map((pool) => (
-                        <PoolGauge key={pool.name} pool={pool} />
-                    ))}
+                <div className="gauge gauge--storage">
+                    <span className="gauge__label">Storage</span>
+                    <div className="pools">
+                        {info.pools.map((pool) => (
+                            <PoolGauge key={pool.name} pool={pool} />
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>
