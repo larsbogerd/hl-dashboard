@@ -10,18 +10,10 @@ type Props = {
     attention: Notice[]
     /** Things happening right now: streams, downloads, queues. */
     activity: Notice[]
-    online: number
-    total: number
     checking: boolean
 }
 
-export function StatusBar({
-    attention,
-    activity,
-    online,
-    total,
-    checking,
-}: Props) {
+export function StatusBar({ attention, activity, checking }: Props) {
     let led = 'led led--ok'
     let status = 'All clear'
     // The full messages, for the tooltip.
@@ -64,9 +56,6 @@ export function StatusBar({
                 >
                     <span className={led} aria-hidden="true" />
                     {status}
-                </span>
-                <span className="topbar__item">
-                    {online} of {total} services up
                 </span>
                 <span className="topbar__item">
                     {activity.length > 0 && (

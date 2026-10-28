@@ -1,14 +1,28 @@
-import { ServiceCard } from './components/ServiceCard'
+import { CardGrid } from './components/CardGrid'
 import { StatusBar, type Notice } from './components/StatusBar'
 import { SystemPanel, SystemPanelOffline } from './components/SystemPanel'
 import { iconUrl } from './icons'
+import { arrange, loadOrder, saveOrder, type Card } from './layout'
 import { CONNECTORS } from './services'
 import { get } from './services/client'
 import { fetchTrueNas } from './services/truenas'
 import type { Service } from './types'
 import { useQueries, useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 
 function App() {
+    const [editing, setEditing] = useState(false)
+    // Passing the function itself (not loadOrder()) makes React call it only
+    // on the first render, instead of reading localStorage on every render.
+    const [order, setOrder] = useState(loadOrder)
+
+    // Saved right here, in the event, rather than in a useEffect that
+    // watches `order`: the drop is the only thing that changes it.
+    function handleReorder(ids: string[]) {
+        setOrder(ids)
+        saveOrder(ids)
+    }
+
     // Link URLs come from the server. They don't change while it runs.
     const { data: links } = useQuery({
         queryKey: ['config'],
@@ -47,14 +61,10 @@ function App() {
     // Everything that needs a look, and everything that's busy right now.
     const attention: Notice[] = []
     const activity: Notice[] = []
-    let online = 0
     let checking = true
     for (const service of services) {
         if (service.status !== 'loading') {
             checking = false
-        }
-        if (service.status === 'online') {
-            online++
         }
         if (service.status === 'offline') {
             attention.push({
@@ -110,24 +120,28 @@ function App() {
         }
     }
 
+    const cards: Card[] = []
+    for (let i = 0; i < services.length; i++) {
+        cards.push({ id: CONNECTORS[i].id, service: services[i] })
+    }
+
     return (
         <>
             <StatusBar
                 attention={attention}
                 activity={activity}
-                online={online}
-                total={services.length}
                 checking={checking}
             />
 
             <main className="app">
                 {systemPanel}
 
-                <section className="grid" aria-label="Services">
-                    {services.map((service) => (
-                        <ServiceCard key={service.name} service={service} />
-                    ))}
-                </section>
+                <CardGrid
+                    cards={arrange(cards, order)}
+                    editing={editing}
+                    onEditingChange={setEditing}
+                    onReorder={handleReorder}
+                />
             </main>
         </>
     )

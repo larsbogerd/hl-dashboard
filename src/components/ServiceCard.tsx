@@ -3,6 +3,11 @@ import { Sparkline } from './Sparkline'
 
 type Props = {
     service: Service
+    /**
+     * While the layout is being edited the card is not a link: a click or a
+     * Tab should land on the card itself, not on the app it opens.
+     */
+    editing?: boolean
 }
 
 /** The light and the word next to it, top right on the card. */
@@ -22,7 +27,7 @@ function statusOf(service: Service): { led: string; text: string } {
     return { led: 'led led--ok', text: 'Online' }
 }
 
-export function ServiceCard({ service }: Props) {
+export function ServiceCard({ service, editing }: Props) {
     const { name, status, version, url, icon, headline, meter, history } =
         service
     const { stats, issues } = service
@@ -34,7 +39,7 @@ export function ServiceCard({ service }: Props) {
                 {icon && <img className="logo" src={icon} alt="" />}
                 <div className="card__id">
                     <h2 className="card__title">
-                        {url ? (
+                        {url && !editing ? (
                             <a
                                 className="card__link"
                                 href={url}
