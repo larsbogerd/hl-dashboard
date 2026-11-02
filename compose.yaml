@@ -1,0 +1,7 @@
+services:
+  hl-dashboard:
+    image: ghcr.io/larsbogerd/hl-dashboard:latest
+    env_file: .env
+    ports:
+      - 3030:3030
+    restart: unless-stopped

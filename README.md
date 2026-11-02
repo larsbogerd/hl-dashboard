@@ -17,6 +17,13 @@ WIP example below. Layout and panels are still changing.
 - Fastify back-end holding the API keys
 
 ```bash
-npm run dev:server   # API proxy on :3001
+npm run dev:server   # API proxy on :3030
 npm run dev          # front-end on :5173
 ```
+
+### Running on the NAS
+
+Every push to `main` publishes `ghcr.io/larsbogerd/hl-dashboard:latest`.
+In Dockge, create a stack from [`compose.yaml`](compose.yaml), paste your
+`.env` into the stack's `.env` editor and start it. The dashboard is on
+port 3030. To update, press **Update** in Dockge.
