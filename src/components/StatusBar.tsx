@@ -49,7 +49,7 @@ export function StatusBar({ attention, activity, checking }: Props) {
     return (
         <header className="topbar">
             <div className="topbar__inner">
-                <span className="topbar__brand">Homelab</span>
+                <span className="topbar__brand">Mission Control</span>
                 <span
                     className="topbar__item topbar__item--status"
                     title={details.join('\n')}
