@@ -4,7 +4,7 @@ import { defineConfig, loadEnv } from 'vite'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '')
-    const backend = `http://localhost:${env.SERVER_PORT ?? 3001}`
+    const backend = `http://localhost:${env.SERVER_PORT ?? 3030}`
 
     return {
         plugins: [react()],

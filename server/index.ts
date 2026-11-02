@@ -1,3 +1,5 @@
+import path from 'node:path'
+import fastifyStatic from '@fastify/static'
 import Fastify from 'fastify'
 import { UPSTREAMS } from './config.ts'
 import { getSystemInfo, startTrueNas } from './truenas.ts'
@@ -47,6 +49,10 @@ app.route({
     },
 })
 
+app.register(fastifyStatic, {
+    root: path.join(import.meta.dirname, '../dist'),
+})
+
 startTrueNas()
-await app.listen({ port: 3001 })
-console.log('API proxy on http://localhost:3001')
+await app.listen({ port: 3030, host: '0.0.0.0' })
+console.log('Dashboard on http://localhost:3030')
