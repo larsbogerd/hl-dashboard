@@ -34,11 +34,16 @@ export const UPSTREAMS: Record<string, Upstream> = {
         url: env('SEERR_URL'),
         headers: { 'X-Api-Key': env('SEERR_API_KEY') },
     },
-    // No key — auth is bypassed for the LAN subnet. Origin/Referer must
-    // match or qBittorrent's CSRF check answers 401.
+    // The key is needed in Docker: the container isn't on the LAN subnet that
+    // qBittorrent lets in without login. Origin/Referer must match or
+    // qBittorrent's CSRF check answers 401.
     qbittorrent: {
         url: qbittorrent,
-        headers: { Origin: qbittorrent, Referer: qbittorrent },
+        headers: {
+            Authorization: `Bearer ${env('QBITTORRENT_API_KEY')}`,
+            Origin: qbittorrent,
+            Referer: qbittorrent,
+        },
     },
     // No key either. Without the Accept header Plex answers in XML.
     plex: {
