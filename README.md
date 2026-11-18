@@ -10,6 +10,9 @@ WIP example below. Layout and panels are still changing.
 
 ![Homelab dashboard](docs/preview.webp)
 
+_The app numbers in this preview are made-up demo data. They are for illustration only and
+don't describe a real library, real downloads or real activity._
+
 ### Stack
 
 - React 19 + TypeScript, built with Vite
